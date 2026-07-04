@@ -95,9 +95,15 @@ jobs:
         WORKSPACE_PATH=$(find . -maxdepth 3 -name "*.xcworkspace" -print -quit || true)
         if [ -n "$WORKSPACE_PATH" ]; then
           echo "Found workspace: $WORKSPACE_PATH"
-          BASE_NAME=$(basename "$WORKSPACE_PATH" .xcworkspace)
-          SCHEME="$BASE_NAME"
-          echo "Attempting to build workspace with scheme: $SCHEME"
+          echo "Listing schemes in workspace"
+          SCHEMES=$(xcodebuild -workspace "$WORKSPACE_PATH" -list 2>/dev/null | awk '/Schemes:/{flag=1;next}/^$/{if(flag)exit}flag{print}' | sed 's/^[[:space:]]*//') || true
+          if [ -n "$SCHEMES" ]; then
+            SCHEME=$(printf "%s\n" "$SCHEMES" | head -n1)
+            echo "Using scheme: $SCHEME"
+          else
+            SCHEME=$(basename "$WORKSPACE_PATH" .xcworkspace)
+            echo "No schemes listed; falling back to scheme: $SCHEME"
+          fi
           xcodebuild -workspace "$WORKSPACE_PATH" -scheme "$SCHEME" -configuration Release -sdk iphoneos CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO clean build
           exit 0
         fi
@@ -116,8 +122,15 @@ jobs:
           WORKSPACE_PATH=$(find . -maxdepth 3 -name "*.xcworkspace" -print -quit || true)
           if [ -n "$WORKSPACE_PATH" ]; then
             echo "Workspace created: $WORKSPACE_PATH"
-            BASE_NAME=$(basename "$WORKSPACE_PATH" .xcworkspace)
-            SCHEME="$BASE_NAME"
+            echo "Listing schemes in workspace"
+            SCHEMES=$(xcodebuild -workspace "$WORKSPACE_PATH" -list 2>/dev/null | awk '/Schemes:/{flag=1;next}/^$/{if(flag)exit}flag{print}' | sed 's/^[[:space:]]*//') || true
+            if [ -n "$SCHEMES" ]; then
+              SCHEME=$(printf "%s\n" "$SCHEMES" | head -n1)
+              echo "Using scheme: $SCHEME"
+            else
+              SCHEME=$(basename "$WORKSPACE_PATH" .xcworkspace)
+              echo "No schemes listed; falling back to scheme: $SCHEME"
+            fi
             xcodebuild -workspace "$WORKSPACE_PATH" -scheme "$SCHEME" -configuration Release -sdk iphoneos CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO clean build
             exit 0
           fi
@@ -129,8 +142,15 @@ jobs:
         PROJ_PATH=$(find . -maxdepth 3 -name "*.xcodeproj" -print -quit || true)
         if [ -n "$PROJ_PATH" ]; then
           echo "Found Xcode project: $PROJ_PATH"
-          BASE_NAME=$(basename "$PROJ_PATH" .xcodeproj)
-          SCHEME="$BASE_NAME"
+          echo "Listing schemes in project"
+          SCHEMES=$(xcodebuild -project "$PROJ_PATH" -list 2>/dev/null | awk '/Schemes:/{flag=1;next}/^$/{if(flag)exit}flag{print}' | sed 's/^[[:space:]]*//') || true
+          if [ -n "$SCHEMES" ]; then
+            SCHEME=$(printf "%s\n" "$SCHEMES" | head -n1)
+            echo "Using scheme: $SCHEME"
+          else
+            SCHEME=$(basename "$PROJ_PATH" .xcodeproj)
+            echo "No schemes listed; falling back to scheme: $SCHEME"
+          fi
           echo "Attempting to build project with scheme: $SCHEME"
           xcodebuild -project "$PROJ_PATH" -scheme "$SCHEME" -configuration Release -sdk iphoneos CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO clean build
           exit 0
