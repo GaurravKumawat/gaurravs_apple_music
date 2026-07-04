@@ -26,9 +26,7 @@ jobs:
       run: npx vite build
 
     - name: Stage Nitro files for Capacitor
-      run: |
-        # Copy everything from inside dist/client/ directly into dist/
-        cp -r dist/client/* ./dist/
+      run: cp -r dist/client/* ./dist/
 
     - name: Copy web assets to Native project
       run: npx cap copy ios
