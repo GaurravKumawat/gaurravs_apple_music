@@ -25,11 +25,6 @@ jobs:
     - name: Build web production assets
       run: npx vite build
 
-    - name: Stage client files for Capacitor
-      run: |
-        mkdir -p dist
-        cp -r dist/client/. ./dist
-
     - name: Copy web assets to Native project
       run: npx cap copy ios
 
