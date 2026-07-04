@@ -24,11 +24,14 @@ jobs:
 
     - name: Build web production assets
       run: npx vite build
+      env:
+        NITRO_PRESET: static
 
     - name: Stage Nitro files for Capacitor
       run: |
+        # Nitro static preset outputs directly to .output/public
         mkdir -p dist
-        cp -r dist/client/. ./dist/
+        cp -r .output/public/* ./dist/
         ls -la ./dist
 
     - name: Copy web assets to Native project
