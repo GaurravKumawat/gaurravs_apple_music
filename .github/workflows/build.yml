@@ -29,9 +29,19 @@ jobs:
 
     - name: Stage Nitro files for Capacitor
       run: |
-        # Nitro static preset outputs directly to .output/public
+        # Prefer Nitro static output at .output/public, but fall back to common Vite outputs
         mkdir -p dist
-        cp -r .output/public/* ./dist/
+        if [ -d ".output/public" ]; then
+          cp -r .output/public/. ./dist/
+        elif [ -d "dist/client" ]; then
+          cp -r dist/client/. ./dist/
+        elif [ -d "dist" ]; then
+          cp -r dist/. ./dist/
+        else
+          echo "No built web assets found (checked .output/public, dist/client, dist)"
+          ls -la
+          exit 1
+        fi
         ls -la ./dist
 
     - name: Copy web assets to Native project
