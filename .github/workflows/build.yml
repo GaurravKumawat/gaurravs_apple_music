@@ -28,8 +28,8 @@ jobs:
     - name: Copy web assets to Native project
       run: npx cap copy ios
 
-    - name: Add iOS Platform Files
-      run: npx cap add ios
+    - name: Sync and Generate Xcode Workspace
+      run: npx cap sync ios
 
     - name: Open and build Xcode Project Workspace
       run: |
