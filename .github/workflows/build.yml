@@ -51,6 +51,11 @@ jobs:
           cp dist/index.html ./dist/index.html
         else
           echo "Warning: no index.html found in expected build outputs"
+          # If the build removed a committed dist/index.html, restore it from git
+          if git ls-files --error-unmatch dist/index.html > /dev/null 2>&1; then
+            echo "Restoring committed dist/index.html from git"
+            git restore --source=HEAD --worktree dist/index.html || git checkout -- dist/index.html || true
+          fi
         fi
         ls -la ./dist
 
