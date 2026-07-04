@@ -88,16 +88,42 @@ jobs:
 
     - name: Open and build Xcode Project Workspace
       run: |
+        set -e
         cd ios/App
-        # Install pods cleanly to force-generate the .xcworkspace file
-        pod install
-        
-        # Check what the workspace file is actually named
-        WORKSPACE_NAME=$(ls | grep .xcworkspace)
-        echo "Found workspace: $WORKSPACE_NAME"
-        
-        # Build using the dynamically found workspace name
-        xcodebuild -workspace "$WORKSPACE_NAME" -scheme App -configuration Release -sdk iphoneos CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO clean build
+
+        # Prefer any existing .xcworkspace
+        if ls *.xcworkspace 1> /dev/null 2>&1; then
+          WORKSPACE_NAME=$(ls *.xcworkspace | head -n1)
+          echo "Found workspace: $WORKSPACE_NAME — building workspace"
+          xcodebuild -workspace "$WORKSPACE_NAME" -scheme App -configuration Release -sdk iphoneos CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO clean build
+        else
+          echo "No .xcworkspace found in ios/App"
+          # Only run pod install if a Podfile exists
+          if [ -f "Podfile" ]; then
+            echo "Podfile detected — attempting pod install"
+            if command -v pod >/dev/null 2>&1; then
+              pod install --project-directory=.
+            else
+              echo "pod command not found on runner — skipping pod install"
+            fi
+          else
+            echo "No Podfile present — skipping pod install"
+          fi
+
+          # After attempting pod install, prefer workspace if created
+          if ls *.xcworkspace 1> /dev/null 2>&1; then
+            WORKSPACE_NAME=$(ls *.xcworkspace | head -n1)
+            echo "Workspace created: $WORKSPACE_NAME — building workspace"
+            xcodebuild -workspace "$WORKSPACE_NAME" -scheme App -configuration Release -sdk iphoneos CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO clean build
+          elif [ -f "App.xcodeproj" ]; then
+            echo "No workspace available — falling back to building App.xcodeproj"
+            xcodebuild -project App.xcodeproj -scheme App -configuration Release -sdk iphoneos CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO clean build
+          else
+            echo "ERROR: no Xcode workspace or project found in ios/App"
+            ls -la
+            exit 1
+          fi
+        fi
 
     - name: Create Unsigned IPA Package
       run: |
