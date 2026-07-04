@@ -27,12 +27,14 @@ jobs:
 
     - name: Stage Nitro files for Capacitor
       run: |
+        # 1. Ensure the target directory exists
         mkdir -p dist
-        # 1. Copy the main index.html from your root directory into dist
-        cp index.html ./dist/
-        # 2. Copy all compiled client assets into dist
+        
+        # 2. Copy the production compiled index.html and assets from the built client directory
+        cp dist/client/index.html ./dist/
         cp -r dist/client/* ./dist/
-        # 3. Verify files are there
+        
+        # 3. Print out the directory map so we can verify the files are exactly where they need to be
         ls -la ./dist
 
     - name: Copy web assets to Native project
