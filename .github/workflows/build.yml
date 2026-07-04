@@ -42,6 +42,16 @@ jobs:
           ls -la
           exit 1
         fi
+        # Ensure an index.html exists at dist root for Capacitor
+        if [ -f ".output/public/index.html" ]; then
+          cp .output/public/index.html ./dist/index.html
+        elif [ -f "dist/client/index.html" ]; then
+          cp dist/client/index.html ./dist/index.html
+        elif [ -f "dist/index.html" ]; then
+          cp dist/index.html ./dist/index.html
+        else
+          echo "Warning: no index.html found in expected build outputs"
+        fi
         ls -la ./dist
 
     - name: Copy web assets to Native project
