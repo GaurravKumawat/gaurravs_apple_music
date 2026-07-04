@@ -1,0 +1,47 @@
+name: Build Unsigned iOS App
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build web production assets
+      run: npx vite build --outDir dist/client
+
+    - name: Copy web assets to Native project
+      run: npx cap copy ios
+
+    - name: Open and build Xcode Project Workspace
+      run: |
+        cd ios/App
+        xcodebuild -workspace App.xcworkspace -scheme App -configuration Release -sdk iphoneos CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO clean build
+
+    - name: Create Unsigned IPA Package
+      run: |
+        mkdir -p payload/Payload
+        cp -r ios/App/build/Release-iphoneos/App.app payload/Payload/
+        cd payload
+        zip -r ../AppleMusic.ipa Payload
+        
+    - name: Upload Finished Build Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: AppleMusic-Unsigned-IPA
+        path: AppleMusic.ipa
