@@ -23,7 +23,7 @@ jobs:
       run: npm install
 
     - name: Build web production assets
-      run: npx vite build --outDir dist/client
+      run: npx vite build --outDir dist
 
     - name: Copy web assets to Native project
       run: npx cap copy ios
