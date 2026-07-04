@@ -24,17 +24,14 @@ jobs:
 
     - name: Build web production assets
       run: npx vite build
+      env:
+        NITRO_PRESET: static
 
     - name: Stage Nitro files for Capacitor
       run: |
-        # 1. Ensure the target directory exists
+        # Nitro static preset outputs directly to .output/public
         mkdir -p dist
-        
-        # 2. Copy the production compiled index.html and assets from the built client directory
-        cp dist/client/index.html ./dist/
-        cp -r dist/client/* ./dist/
-        
-        # 3. Print out the directory map so we can verify the files are exactly where they need to be
+        cp -r .output/public/* ./dist/
         ls -la ./dist
 
     - name: Copy web assets to Native project
