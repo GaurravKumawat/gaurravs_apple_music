@@ -29,34 +29,55 @@ jobs:
 
     - name: Stage Nitro files for Capacitor
       run: |
-        # Prefer Nitro static output at .output/public, but fall back to common Vite outputs
+        # Assemble a staging `./dist` for Capacitor with index.html + client assets
         mkdir -p dist
+        # 1) If Nitro static public exists, use it as-is
         if [ -d ".output/public" ]; then
           cp -r .output/public/. ./dist/
-        elif [ -d "dist/client" ]; then
-          cp -r dist/client/. ./dist/
-        elif [ -d "dist" ]; then
-          cp -r dist/. ./dist/
-        else
-          echo "No built web assets found (checked .output/public, dist/client, dist)"
-          ls -la
-          exit 1
         fi
-        # Ensure an index.html exists at dist root for Capacitor
-        if [ -f ".output/public/index.html" ]; then
-          cp .output/public/index.html ./dist/index.html
-        elif [ -f "dist/client/index.html" ]; then
-          cp dist/client/index.html ./dist/index.html
-        elif [ -f "dist/index.html" ]; then
+
+        # 2) If Vite produced a `dist` with client assets, copy client and assets into staging
+        if [ -d "dist/client" ]; then
+          mkdir -p ./dist
+          cp -r dist/client/. ./dist/ || true
+        fi
+        if [ -d "dist/assets" ]; then
+          mkdir -p ./dist/assets
+          cp -r dist/assets/. ./dist/assets/ || true
+        fi
+
+        # 3) If there is a root dist/index.html (common Vite SPA), copy it to staging
+        if [ -f "dist/index.html" ]; then
           cp dist/index.html ./dist/index.html
-        else
-          echo "Warning: no index.html found in expected build outputs"
-          # If the build removed a committed dist/index.html, restore it from git
+        fi
+
+        # 4) If client/index.html exists use that as fallback
+        if [ -f "dist/client/index.html" ] && [ ! -f "./dist/index.html" ]; then
+          cp dist/client/index.html ./dist/index.html
+        fi
+
+        # 5) If Nitro public/index.html exists and nothing else provided, copy it
+        if [ -f ".output/public/index.html" ] && [ ! -f "./dist/index.html" ]; then
+          cp .output/public/index.html ./dist/index.html
+        fi
+
+        # 6) If no index.html yet but a tracked dist/index.html exists in repo, restore it
+        if [ ! -f "./dist/index.html" ]; then
           if git ls-files --error-unmatch dist/index.html > /dev/null 2>&1; then
             echo "Restoring committed dist/index.html from git"
             git restore --source=HEAD --worktree dist/index.html || git checkout -- dist/index.html || true
+            cp dist/index.html ./dist/index.html || true
           fi
         fi
+
+        # Final check
+        if [ ! -f "./dist/index.html" ]; then
+          echo "Error: no index.html found in staging ./dist; Capacitor requires an index.html entrypoint"
+          ls -la dist || true
+          ls -la .output || true
+          exit 1
+        fi
+
         ls -la ./dist
 
     - name: Copy web assets to Native project
