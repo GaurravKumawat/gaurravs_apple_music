@@ -3,7 +3,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 const config: CapacitorConfig = {
   appId: 'com.yourname.applemusic',
   appName: 'Apple Music',
-  webDir: 'dist'  
+  webDir: 'dist'
 };
 
 export default config;

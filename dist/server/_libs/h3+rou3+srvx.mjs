@@ -307,6 +307,18 @@ function callMiddleware(event, middleware, handler, index = 0) {
 function isUnhandledResponse(val) {
 	return val === void 0 || val === kNotFound;
 }
+function toRequest(input, options) {
+	if (typeof input === "string") {
+		let url = input;
+		if (url[0] === "/") {
+			const headers = options?.headers ? new Headers(options.headers) : void 0;
+			const host = headers?.get("host") || "localhost";
+			url = `${headers?.get("x-forwarded-proto") === "https" ? "https" : "http"}://${host}${url}`;
+		}
+		return new Request(url, options);
+	} else if (options || input instanceof URL) return new Request(input, options);
+	return input;
+}
 function defineHandler(input) {
 	if (typeof input === "function") return handlerWithFetch(input);
 	const handler = input.handler || (input.fetch ? function _fetchHandler(event) {
@@ -396,4 +408,4 @@ var H3Core = class {
 	}
 };
 //#endregion
-export { FastResponse as a, defineLazyEventHandler as i, HTTPError as n, FastURL as o, HTTPResponse as r, NullProtoObj as s, H3Core as t };
+export { FastResponse as a, toRequest as i, HTTPError as n, FastURL as o, defineLazyEventHandler as r, NullProtoObj as s, H3Core as t };

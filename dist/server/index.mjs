@@ -1,5 +1,5 @@
 globalThis.__nitro_main__ = import.meta.url;
-import { a as FastResponse, i as defineLazyEventHandler, n as HTTPError, t as H3Core } from "./_libs/h3+rou3+srvx.mjs";
+import { a as FastResponse, n as HTTPError, r as defineLazyEventHandler, t as H3Core } from "./_libs/h3+rou3+srvx.mjs";
 import { t as HookableCore } from "./_libs/hookable.mjs";
 //#region #nitro-vite-setup
 function lazyService(loader) {
@@ -15,26 +15,26 @@ globalThis.__nitro_vite_envs__ = services;
 //#endregion
 //#region #nitro/virtual/public-assets-data
 var public_assets_data_default = {
-	"/assets/routes-DQ7ANRk_.js": {
+	"/assets/routes-CB68dnsI.js": {
 		"type": "text/javascript; charset=utf-8",
-		"etag": "\"3330f-K75Wi8YRv9373mrHqGt4Grryl8Y\"",
-		"mtime": "2026-07-04T08:33:57.114Z",
-		"size": 209679,
-		"path": "../client/assets/routes-DQ7ANRk_.js"
-	},
-	"/assets/index-Csobks5p.js": {
-		"type": "text/javascript; charset=utf-8",
-		"etag": "\"5c40f-qytKl07k6PDY1WOex7VsqWGGA+c\"",
-		"mtime": "2026-07-04T08:33:57.114Z",
-		"size": 377871,
-		"path": "../client/assets/index-Csobks5p.js"
+		"etag": "\"1589b-FQZ16925lwfCemavU7QoLNy0izg\"",
+		"mtime": "2026-07-05T14:56:50.459Z",
+		"size": 88219,
+		"path": "../client/assets/routes-CB68dnsI.js"
 	},
 	"/assets/styles-Chp3HcgV.css": {
 		"type": "text/css; charset=utf-8",
 		"etag": "\"15460-mfSsXIxj9qob6xXvIs04klgHCS4\"",
-		"mtime": "2026-07-04T08:33:57.116Z",
+		"mtime": "2026-07-05T14:56:50.459Z",
 		"size": 87136,
 		"path": "../client/assets/styles-Chp3HcgV.css"
+	},
+	"/assets/index-BqxIyhLl.js": {
+		"type": "text/javascript; charset=utf-8",
+		"etag": "\"79feb-qrhndFw+YptP7YVLUl+5af7L2rE\"",
+		"mtime": "2026-07-05T14:56:50.459Z",
+		"size": 499691,
+		"path": "../client/assets/index-BqxIyhLl.js"
 	}
 };
 //#endregion
@@ -72,11 +72,11 @@ var findRouteRules = /* @__PURE__ */ (() => {
 		return r;
 	};
 })();
-var _lazy_c2mdnq = defineLazyEventHandler(() => import("./_chunks/renderer-template.mjs"));
+var _lazy_BFrnyZ = defineLazyEventHandler(() => import("./_chunks/ssr-renderer.mjs"));
 var findRoute = /* @__PURE__ */ (() => {
 	const data = {
 		route: "/**",
-		handler: _lazy_c2mdnq
+		handler: _lazy_BFrnyZ
 	};
 	return ((_m, p) => {
 		return {

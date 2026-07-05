@@ -1,6 +1,6 @@
 import { a as __toESM, t as __commonJSMin } from "../../_runtime.mjs";
 import { r as parseHref } from "../tanstack__history.mjs";
-import { i as require_react, r as require_jsx_runtime } from "../react+tanstack__react-query.mjs";
+import { i as require_jsx_runtime, r as require_react } from "../react+tanstack__react-query.mjs";
 import { PassThrough, Readable } from "node:stream";
 import { ReadableStream as ReadableStream$1 } from "node:stream/web";
 //#region node_modules/@tanstack/router-core/dist/esm/utils.js
